@@ -28,6 +28,9 @@ class Phone(Field):
     def is_valid(value):
         return len(value) == 10 and value.isdigit()  # Перевірка на коректність номера телефону
 
+    def __eq__(self, __value: object) -> bool:
+        return self._value == __value._value
+    
 class Birthday(Field):
     def is_valid(self, value):
         try:
@@ -91,18 +94,18 @@ class AddressBook(UserDict):
         self.file_name = file_name
         self.load_from_file()
 
-    def save_to_file(self):
+    def save_to_file(self):       # Додаємо метод save_to_file для збереження адресної книги з файлу
         with open(self.file_name, 'wb') as file:
             pickle.dump(self.data, file)
 
-    def load_from_file(self):
+    def load_from_file(self):      # Додаємо метод load_from_file для завантаження/відновлення адресної книги з файлу
         try:
             with open(self.file_name, 'rb') as file:
                 self.data = pickle.load(file)
         except FileNotFoundError:
             self.data = {}
 
-    def add_record(self, record):
+    def add_record(self, record: Record):
         self.data[record.name.value] = record
         self.save_to_file()
 
@@ -115,7 +118,7 @@ class AddressBook(UserDict):
             del self.data[name]
             self.save_to_file()
 
-    def search(self, query):
+    def search(self, query):        # Додаємо метод search до, який дозволить шукати контакти за іменем або номером телефону
         results = []
         query = query.lower()
         for record in self.data.values():
